@@ -35,7 +35,7 @@ const Register = ({navigation}) => {
         password,
       };
       axios
-        .post('http://192.168.0.132:8001/auth/register', data)
+        .post('http://192.168.42.142:8001/auth/register', data)
         .then((res) => {
           console.log(res);
           navigation.replace('login');

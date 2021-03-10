@@ -23,7 +23,7 @@ const Login = ({navigation}) => {
       };
 
       axios
-        .post('http://192.168.0.132:8001/auth/login', data)
+        .post('http://192.168.42.142:8001/auth/login', data)
         .then((res) => {
           console.log(res.data.data);
           const id = res.data.data.id;

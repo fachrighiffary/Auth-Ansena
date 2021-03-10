@@ -17,7 +17,7 @@ const Home = ({navigation, route}) => {
 
   const getAllUser = () => {
     axios
-      .get('http://192.168.0.132:8001/auth')
+      .get('http://192.168.42.142:8001/auth')
       .then((res) => {
         console.log(res.data.data);
         setUsers(res.data.data);
@@ -27,6 +27,8 @@ const Home = ({navigation, route}) => {
       });
   };
 
+  console.log(route);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -34,7 +36,7 @@ const Home = ({navigation, route}) => {
         activeOpacity={0.6}
         onPress={() => {
           navigation.navigate('profile', {
-            idUser: route.params.id,
+            id: route.params.id,
             email: route.params.email,
             password: route.params.password,
           });

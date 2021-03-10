@@ -4,6 +4,7 @@ const initialState = {
   email: '',
   id: '',
   token: '',
+  password: '',
 };
 
 const AuthReducer = (prevState = initialState, action) => {
@@ -14,7 +15,7 @@ const AuthReducer = (prevState = initialState, action) => {
         isLogin: true,
         fullname: action.data.fullname,
         email: action.data.email,
-        level: action.data.level,
+        password: action.data.password,
         id: action.data.id,
         token: action.data.token,
       };

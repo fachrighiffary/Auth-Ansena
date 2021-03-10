@@ -25,9 +25,9 @@ const Profile = ({navigation, route}) => {
   }, []);
 
   const getData = () => {
-    const id = route.params.idUser;
+    const id = route.params.id;
     axios
-      .get(`http://192.168.0.132:8001/auth/${id}`)
+      .get(`http://192.168.42.142:8001/auth/${id}`)
       .then((res) => {
         console.log(res.data.data[0].email);
         setFullname(res.data.data[0].fullname);
@@ -40,14 +40,14 @@ const Profile = ({navigation, route}) => {
   };
 
   const SubmitUpdate = () => {
-    const id = route.params.idUser;
+    const id = route.params.id;
     const data = {
       fullname,
       email,
       phone_number,
     };
     axios
-      .patch(`http://192.168.0.132:8001/auth/${id}`, data)
+      .patch(`http://192.168.42.142:8001/auth/${id}`, data)
       .then((res) => {
         console.log(res);
         alert('Update Success');
@@ -69,10 +69,11 @@ const Profile = ({navigation, route}) => {
         new_password: newPassword,
       };
       axios
-        .patch('http://192.168.0.132:8001/auth/change-password', data)
+        .patch('http://192.168.42.142:8001/auth/change-password', data)
         .then((res) => {
           console.log(res);
           setModalVisible(!modalVisible);
+          navigation.push('home');
         })
         .catch(({response}) => {
           console.log(response);
