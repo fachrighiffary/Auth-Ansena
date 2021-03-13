@@ -9,8 +9,10 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
+import {connect} from 'react-redux';
+import {API_URL} from '@env';
 
-const Profile = ({navigation, route}) => {
+const Profile = ({navigation, auth}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
@@ -20,14 +22,16 @@ const Profile = ({navigation, route}) => {
   const [retype, setRetype] = useState('');
   const [errorForm, setErrorForm] = useState('Password lama tidak sesuai');
 
+  console.log(auth.userid);
+
   useEffect(() => {
     getData();
   }, []);
 
   const getData = () => {
-    const id = route.params.id;
+    const id = auth.userid;
     axios
-      .get(`http://192.168.42.142:8001/auth/${id}`)
+      .get(`${API_URL}/auth/${id}`)
       .then((res) => {
         console.log(res.data.data[0].email);
         setFullname(res.data.data[0].fullname);
@@ -40,14 +44,14 @@ const Profile = ({navigation, route}) => {
   };
 
   const SubmitUpdate = () => {
-    const id = route.params.id;
+    const id = auth.userid;
     const data = {
       fullname,
       email,
       phone_number,
     };
     axios
-      .patch(`http://192.168.42.142:8001/auth/${id}`, data)
+      .patch(`${API_URL}/auth/${id}`, data)
       .then((res) => {
         console.log(res);
         alert('Update Success');
@@ -58,18 +62,18 @@ const Profile = ({navigation, route}) => {
   };
 
   const submitChangePassword = () => {
-    if (old_password != route.params.password) {
+    if (old_password != auth.password) {
       setErrorForm('Password lama tidak sesuai');
     } else if (newPassword != retype) {
       setErrorForm('Password harus sama');
     } else {
       const data = {
-        email: route.params.email,
+        email: auth.email,
         old_password,
         new_password: newPassword,
       };
       axios
-        .patch('http://192.168.42.142:8001/auth/change-password', data)
+        .patch(API_URL + '/auth/change-password', data)
         .then((res) => {
           console.log(res);
           setModalVisible(!modalVisible);
@@ -80,8 +84,6 @@ const Profile = ({navigation, route}) => {
         });
     }
   };
-
-  console.log(route);
 
   return (
     <View style={styles.container}>
@@ -283,4 +285,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+const mapStatetToProps = ({auth}) => {
+  return {
+    auth,
+  };
+};
+
+export default connect(mapStatetToProps)(Profile);

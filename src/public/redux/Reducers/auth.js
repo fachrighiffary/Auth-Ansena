@@ -1,9 +1,9 @@
 const initialState = {
   isLogin: false,
-  fullname: '',
-  email: '',
-  id: '',
   token: '',
+  userid: '',
+  fullname: '',
+  phone_number: '',
   password: '',
 };
 
@@ -13,19 +13,21 @@ const AuthReducer = (prevState = initialState, action) => {
       return {
         ...prevState,
         isLogin: true,
-        fullname: action.data.fullname,
         email: action.data.email,
+        phone_number: action.data.phone_number,
+        fullname: action.data.fullname,
         password: action.data.password,
-        id: action.data.id,
+        userid: action.data.userid,
         token: action.data.token,
       };
     case 'LOGIN_FALSE':
       return {
         ...prevState,
         isLogin: false,
-        fullname: '',
         email: '',
-        id: '',
+        phone_number: '',
+        fullname: '',
+        userid: '',
         token: '',
       };
     default:

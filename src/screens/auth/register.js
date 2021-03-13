@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import {API_URL} from '@env';
 
 const Register = ({navigation}) => {
   const [fullname, setFullname] = useState('');
@@ -35,7 +36,7 @@ const Register = ({navigation}) => {
         password,
       };
       axios
-        .post('http://192.168.42.142:8001/auth/register', data)
+        .post(API_URL + '/auth/register', data)
         .then((res) => {
           console.log(res);
           navigation.replace('login');

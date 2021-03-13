@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, {useState} from 'react';
+import React, {Component, useState} from 'react';
 import {
   View,
   Text,
@@ -7,82 +7,111 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import {connect} from 'react-redux';
+import {
+  setLoginFalse,
+  setLoginTrue,
+} from '../../public/redux/ActionCreators/auth';
+import {API_URL} from '@env';
 
-const Login = ({navigation}) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [formError, setFormError] = useState('');
+class Login extends Component {
+  constructor() {
+    super();
+    this.state = {
+      email: '',
+      password: '',
+      formError: '',
+    };
+  }
 
-  const SubmitLogin = () => {
-    if (email === '' || password === '') {
-      setFormError('All fields must be filled in');
+  SubmitLogin = () => {
+    if (this.state.email === '' || this.state.password === '') {
+      this.setState({
+        formError: 'All fields must be filled in',
+      });
     } else {
       const data = {
-        email,
-        password,
+        email: this.state.email,
+        password: this.state.password,
       };
 
       axios
-        .post('http://192.168.42.142:8001/auth/login', data)
-        .then((res) => {
+        .post(API_URL + '/auth/login', data)
+        .then(async (res) => {
           console.log(res.data.data);
-          const id = res.data.data.id;
-          const email = res.data.data.email;
-
-          navigation.replace('home', {
-            id: res.data.data.id,
+          const dataLogin = {
+            userid: res.data.data.id,
             email: res.data.data.email,
-            password,
-          });
+            token: res.data.data.token,
+            phone_number: res.data.data.phone_number,
+            fullname: res.data.data.fullname,
+            password: this.state.password,
+          };
+          console.log(dataLogin);
+          this.props.dispatch(setLoginTrue(dataLogin));
+          this.props.navigation.replace('home');
         })
         .catch(({response}) => {
           console.log(response.data.msg);
-          setFormError(response.data.msg);
+          this.setState({
+            formError: response.data.msg,
+          });
         });
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.txtHeader}>AUTH</Text>
-        <Text style={styles.txtHeader}>Ansena Group Asia</Text>
-      </View>
-      <View style={styles.bottom}>
-        <View style={{...styles.formInput, marginTop: 40}}>
-          <TextInput
-            placeholder="Email"
-            defaultValue={email}
-            onChangeText={(email) => setEmail(email)}
-          />
+  render() {
+    const {formError} = this.state;
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.txtHeader}>AUTH</Text>
+          <Text style={styles.txtHeader}>Ansena Group Asia</Text>
         </View>
-        <View style={styles.formInput}>
-          <TextInput
-            placeholder="Password"
-            secureTextEntry={true}
-            defaultValue={password}
-            onChangeText={(password) => setPassword(password)}
-          />
-        </View>
-        <View style={{alignSelf: 'center', marginBottom: 15}}>
-          <Text style={{color: 'red'}}>{formError}</Text>
-        </View>
-        <TouchableOpacity style={styles.btn} onPress={SubmitLogin}>
-          <Text style={{color: 'white', fontSize: 20}}>Login</Text>
-        </TouchableOpacity>
-        <View style={styles.btnRegister}>
-          <Text>Dont have account ?,</Text>
+        <View style={styles.bottom}>
+          <View style={{...styles.formInput, marginTop: 40}}>
+            <TextInput
+              placeholder="Email"
+              name="email"
+              value={this.state.email}
+              onChangeText={(email) => this.setState({email})}
+            />
+          </View>
+          <View style={styles.formInput}>
+            <TextInput
+              placeholder="Password"
+              secureTextEntry={true}
+              name="password"
+              value={this.state.password}
+              onChangeText={(text) => {
+                this.setState({password: text});
+              }}
+            />
+          </View>
+          <View style={{alignSelf: 'center', marginBottom: 15}}>
+            <Text style={{color: 'red'}}>{formError}</Text>
+          </View>
           <TouchableOpacity
+            style={styles.btn}
             onPress={() => {
-              navigation.replace('register');
+              this.SubmitLogin();
             }}>
-            <Text> sign up here</Text>
+            <Text style={{color: 'white', fontSize: 20}}>Login</Text>
           </TouchableOpacity>
+          <View style={styles.btnRegister}>
+            <Text>Dont have account ?,</Text>
+            <TouchableOpacity
+              onPress={() => {
+                this.props.navigation.replace('register');
+              }}>
+              <Text> sign up here</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
-  );
-};
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -132,4 +161,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+const mapStateToProps = ({auth}) => {
+  return {
+    auth,
+  };
+};
+
+export default connect(mapStateToProps)(Login);
